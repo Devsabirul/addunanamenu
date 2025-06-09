@@ -89,7 +89,7 @@ button {
   body {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    background: white !important; /* মূল পেজ ব্যাকগ্রাউন্ড */
+    background: white !important; 
   }
 
   body * {
@@ -106,8 +106,8 @@ button {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #ebdec7 !important; /* ✅ আপনার কাঙ্ক্ষিত ব্যাকগ্রাউন্ড কালার */
-    padding: 20px; /* চাইলে কমাতে/বাড়াতে পারেন */
+    background-color: #ebdec7 !important; 
+    padding: 20px; 
   }
 
   .form-section,
