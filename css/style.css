@@ -1,0 +1,108 @@
+body {
+  font-family: "Georgia", serif;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.form-section {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+input,
+button {
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+}
+button {
+  cursor: pointer;
+  background-color: #004d40;
+  color: white;
+  border: none;
+}
+.menu-preview {
+  padding: 20px;
+  background: #ebdec7;
+  color: #003d33;
+  text-align: center;
+}
+.menu-preview h2 {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-size: 18px;
+  margin: 0px 0;
+  gap: 10px;
+}
+.menu-preview h2::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #003d33;
+  margin-right: 35px;
+}
+.menu-preview h2::before {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #003d33;
+}
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  font-weight: bold;
+  align-items: center;
+}
+.menu-item span {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-size: 15px;
+}
+.menu-item .actions {
+  margin-left: 0;
+}
+.menu-item button {
+  background-color: transparent;
+  color: #004d40;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: 0;
+}
+.logo {
+  text-align: center;
+}
+.logo img {
+  max-width: 50%;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .menu-preview,
+  .menu-preview * {
+    visibility: visible;
+  }
+  .form-section,
+  .menu-item .actions,
+  .menu-item .actions * {
+    display: none !important;
+  }
+  .menu-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

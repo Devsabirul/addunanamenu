@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Addù Nanà Menu Builder</title>
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script src="js/index.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <h3><center>Addù Nanà Menu</center></h3>
+      </div>
+      <div class="form-section">
+        <select
+          style="padding: 10px; width: 100%; font-size: 16px"
+          id="category"
+        >
+          <option value="antipasti mare">Antipasti Mare</option>
+          <option value="antipasti Terra">Antipasti Terra</option>
+          <option value="Primi di Mare">Primi di Mare</option>
+          <option value="Primi di Terra">Primi di Terra</option>
+          <option value="Alla Griglia">Alla Griglia</option>
+          <option value="Secondi Mare">Secondi Mare</option>
+          <option value="I Fritti">I Fritti</option>
+          <option value="I Crudi">I Crudi</option>
+        </select>
+        <input type="text" id="itemName" placeholder="Item Name" />
+        <input type="text" id="itemPrice" placeholder="Price (e.g., 6.00)" />
+        <div>
+          <button onclick="addItem()">Add</button>
+          <button style="margin-top: 10px" onclick="window.print()">
+            🖨 Print or Download 
+          </button>
+        </div>
+      </div>
+
+      <div class="menu-preview" id="menu" style="border: 2px solid gray">
+        <div class="logo">
+          <img
+            style="margin-bottom: 12px"
+            src="img/logo.png"
+            alt="Addù Nanà Logo"
+          />
+        </div>
+        <div id="menuContent"></div>
+      </div>
+    </div>
+  </body>
+</html>
