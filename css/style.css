@@ -85,24 +85,34 @@ button {
 .logo img {
   max-width: 50%;
 }
-
 @media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: white !important; /* মূল পেজ ব্যাকগ্রাউন্ড */
+  }
+
   body * {
     visibility: hidden;
   }
+
   .menu-preview,
   .menu-preview * {
     visibility: visible;
   }
+
+  .menu-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ebdec7 !important; /* ✅ আপনার কাঙ্ক্ষিত ব্যাকগ্রাউন্ড কালার */
+    padding: 20px; /* চাইলে কমাতে/বাড়াতে পারেন */
+  }
+
   .form-section,
   .menu-item .actions,
   .menu-item .actions * {
     display: none !important;
-  }
-  .menu-preview {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
   }
 }
