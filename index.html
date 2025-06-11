@@ -6,7 +6,8 @@
     <title>Addù Nanà Menu Builder</title>
     <link rel="stylesheet" href="css/style.css" />
 
-    <script src="js/index.js"></script>
+   <!--- <script src="js/index.js"></script>---->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js" type="text/javascript"></script>
   </head>
   <body>
     <div class="container">
@@ -47,6 +48,159 @@
         </div>
         <div id="menuContent"></div>
       </div>
-    </div>
+    </div> 
+    <script>
+    const menuData = {};
+    let isEditing = false;
+    let editCategory = "";
+    let editIndex = -1;
+    
+    // Firebase config
+    const firebaseConfig = {
+    apiKey: "AIzaSyBAr9Qy_E87zakETN4hfQg9IarcmppVMw8",
+    authDomain: "addunanamenu.firebaseapp.com",
+    projectId: "addunanamenu",
+    storageBucket: "addunanamenu.firebasestorage.app",
+    messagingSenderId: "964402137078",
+    appId: "1:964402137078:web:e2c3d6780cc7abb2d9e9d7",
+    measurementId: "G-E7DENGHVT9"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    // Fetch menu items once on load
+    function fetchMenuFromFirestore() {
+    db.collection("Menu").get().then(querySnapshot => {
+    // Clear menuData before loading fresh
+    for (const key in menuData) delete menuData[key];
+    
+    querySnapshot.forEach(doc => {
+    const data = doc.data();
+    const category = data.category;
+    const name = data.itemname;
+    const price = data.price;
+    
+    if (!menuData[category]) menuData[category] = [];
+    menuData[category].push({ name, price, id: doc.id });
+    });
+    renderMenu();
+    }).catch(error => {
+    alert("Error fetching documents: " + error.message);
+    });
+    }
+    
+    // Render menu UI
+    function renderMenu() {
+    const container = document.getElementById("menuContent");
+    container.innerHTML = "";
+    
+    Object.entries(menuData).forEach(([category, items]) => {
+    const section = document.createElement("div");
+    const title = document.createElement("h2");
+    title.innerText = category.toUpperCase();
+    section.appendChild(title);
+    
+    items.forEach(({ name, price, id }, index) => {
+    const item = document.createElement("div");
+    item.className = "menu-item";
+    item.innerHTML = `
+    <span>${name}</span>
+    <span>${price}€</span>
+    <span class="actions">
+    <button onclick="editItem('${category}', ${index})">✏️</button>
+    <button onclick="deleteItem('${category}', ${index})">❌</button>
+    </span>
+    `;
+    section.appendChild(item);
+    });
+    
+    container.appendChild(section);
+    });
+    }
+    
+    // Add or update item
+    function addItem() {
+    const cat = document.getElementById("category").value.trim();
+    const name = document.getElementById("itemName").value.trim();
+    const price = document.getElementById("itemPrice").value.trim();
+    
+    if (!cat || !name || !price) return;
+    
+    if (!menuData[cat]) menuData[cat] = [];
+    
+    if (isEditing) {
+    const item = menuData[editCategory][editIndex];
+    const docId = item.id;
+    
+    db.collection("Menu").doc(docId).update({
+    category: cat,
+    itemname: name,
+    price: price
+    }).then(() => {
+    // Remove old entry
+    menuData[editCategory].splice(editIndex, 1);
+    if (menuData[editCategory].length === 0) delete menuData[editCategory];
+    
+    // Add updated entry to new category
+    if (!menuData[cat]) menuData[cat] = [];
+    menuData[cat].push({ name, price, id: docId });
+    
+    // Reset edit state
+    isEditing = false;
+    editCategory = "";
+    editIndex = -1;
+    
+    renderMenu();
+    }).catch(error => {
+    alert("Error updating item: " + error.message);
+    });
+    } else {
+    db.collection("Menu").add({
+    category: cat,
+    itemname: name,
+    price: price
+    }).then(docRef => {
+    menuData[cat].push({ name, price, id: docRef.id });
+    renderMenu();
+    }).catch(error => {
+    alert("Error adding item: " + error.message);
+    });
+    }
+    
+    document.getElementById("category").value = "";
+    document.getElementById("itemName").value = "";
+    document.getElementById("itemPrice").value = "";
+    }
+    
+    // Prepare item for editing
+    function editItem(category, index) {
+    const item = menuData[category][index];
+    document.getElementById("category").value = category;
+    document.getElementById("itemName").value = item.name;
+    document.getElementById("itemPrice").value = item.price;
+    
+    isEditing = true;
+    editCategory = category;
+    editIndex = index;
+    }
+    
+    // Delete item
+    function deleteItem(category, index) {
+    const docId = menuData[category][index].id;
+    
+    db.collection("Menu").doc(docId).delete().then(() => {
+    menuData[category].splice(index, 1);
+    if (menuData[category].length === 0) delete menuData[category];
+    renderMenu();
+    }).catch(error => {
+    alert("Failed to delete: " + error.message);
+    });
+    }
+    
+    // Load menu on page load
+    window.onload = fetchMenuFromFirestore
+    </script>
   </body>
 </html>
