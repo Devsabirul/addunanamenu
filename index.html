@@ -106,8 +106,8 @@
     const item = document.createElement("div");
     item.className = "menu-item";
     item.innerHTML = `
-    <span style="font-wight:none !important;font-family:arial;font-size:14px;">${name}</span>
-    <span style="font-wight:none !important;font-family:arial;font-size:14px;margin-right:33px;">${price}€</span>
+    <span class="margin-bottom:3px;">${name}</span>
+    <span class="margin-bottom:3px;">${price}€</span>
     <span class="actions">
     <button onclick="editItem('${category}', ${index})">✏️</button>
     <button onclick="deleteItem('${category}', ${index})">❌</button>
@@ -204,6 +204,9 @@
     
     </script>
     
+  </body>
+  
+</html>    
   </body>
   
 </html>
