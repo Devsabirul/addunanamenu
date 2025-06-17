@@ -106,8 +106,8 @@
     const item = document.createElement("div");
     item.className = "menu-item";
     item.innerHTML = `
-    <span class="margin-bottom:3px;">${name}</span>
-    <span class="margin-bottom:3px;">${price}€</span>
+    <span>${name}</span>
+    <span>${price}€</span>
     <span class="actions">
     <button onclick="editItem('${category}', ${index})">✏️</button>
     <button onclick="deleteItem('${category}', ${index})">❌</button>
