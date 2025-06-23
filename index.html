@@ -57,7 +57,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height:100vh;
+        height: 100vh;
       }
 
       .menu-preview h2 {
@@ -120,10 +120,17 @@
       }
 
       @media print {
+        @page {
+          size: auto; /* Let the user choose */
+          margin: 0; /* Remove default print margins */
+        }
+
         body {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
           background: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
 
         body * {
@@ -139,20 +146,21 @@
           position: absolute;
           top: 0;
           left: 0;
-          width: 100%;
+          width: 100vw;
+          height: 100vh; /* Full screen height */
           background-color: #ebdec7 !important;
           padding: 20px;
           display: flex !important;
           flex-direction: column;
           justify-content: space-between;
-          height: 79vh;
+          box-sizing: border-box;
         }
 
         #menuContent {
           display: flex !important;
           flex-direction: column;
           justify-content: space-between;
-          height:79vh;
+          height: 100%;
         }
 
         .form-section,
@@ -162,7 +170,10 @@
         }
       }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js" type="text/javascript"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"
+      type="text/javascript"
+    ></script>
   </head>
   <body>
     <div class="container">
@@ -175,13 +186,20 @@
         <input type="text" id="itemPrice" placeholder="Price (e.g., 6.00)" />
         <div>
           <button onclick="addItem()">Add</button>
-          <button style="margin-top: 10px" onclick="window.print()">🖨 Print or Download</button>
+          <button style="margin-top: 10px" onclick="window.print()">
+            🖨 Print or Download
+          </button>
+          <!-- <button onclick="location.href='menu.html'">🌐 View Full Menu</button> -->
         </div>
       </div>
 
       <div class="menu-preview" id="menu" style="border: 2px solid gray">
         <div class="logo">
-          <img style="margin-bottom: 12px" src="img/logo.png" alt="Addù Nanà Logo" />
+          <img
+            style="margin-bottom: 12px"
+            src="img/logo.png"
+            alt="Addù Nanà Logo"
+          />
         </div>
         <div id="menuContent"></div>
       </div>
@@ -200,7 +218,7 @@
         storageBucket: "addunanamenu.firebasestorage.app",
         messagingSenderId: "964402137078",
         appId: "1:964402137078:web:e2c3d6780cc7abb2d9e9d7",
-        measurementId: "G-E7DENGHVT9"
+        measurementId: "G-E7DENGHVT9",
       };
 
       firebase.initializeApp(firebaseConfig);
@@ -209,20 +227,23 @@
       function fetchMenuFromFirestore() {
         for (const key in menuData) delete menuData[key];
 
-        db.collection("Menu").get().then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            const data = doc.data();
-            const category = data.category;
-            const name = data.itemname;
-            const price = data.price;
+        db.collection("Menu")
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const category = data.category;
+              const name = data.itemname;
+              const price = data.price;
 
-            if (!menuData[category]) menuData[category] = [];
-            menuData[category].push({ name, price, id: doc.id });
+              if (!menuData[category]) menuData[category] = [];
+              menuData[category].push({ name, price, id: doc.id });
+            });
+            renderMenu();
+          })
+          .catch((error) => {
+            alert("Error fetching documents: " + error.message);
           });
-          renderMenu();
-        }).catch(error => {
-          alert("Error fetching documents: " + error.message);
-        });
       }
 
       function renderMenu() {
@@ -240,7 +261,7 @@
             item.className = "menu-item";
             item.innerHTML = `
               <span style="margin-bottom:5px;font-weight: normal;">${name}</span>
-              <span style="margin-right:30px !important;font-weight: normal;margin-bottom:5px;">${price}€</span>
+              <span style="margin-right:30px !important;font-weight: normal;margin-bottom:5px;">${price}</span>
               <span class="actions">
                 <button onclick="editItem('${category}', ${index})">✏️</button>
                 <button onclick="deleteItem('${category}', ${index})">❌</button>
@@ -266,36 +287,44 @@
           const item = menuData[editCategory][editIndex];
           const docId = item.id;
 
-          db.collection("Menu").doc(docId).update({
-            category: cat,
-            itemname: name,
-            price: price
-          }).then(() => {
-            menuData[editCategory].splice(editIndex, 1);
-            if (menuData[editCategory].length === 0) delete menuData[editCategory];
+          db.collection("Menu")
+            .doc(docId)
+            .update({
+              category: cat,
+              itemname: name,
+              price: price,
+            })
+            .then(() => {
+              menuData[editCategory].splice(editIndex, 1);
+              if (menuData[editCategory].length === 0)
+                delete menuData[editCategory];
 
-            if (!menuData[cat]) menuData[cat] = [];
-            menuData[cat].push({ name, price, id: docId });
+              if (!menuData[cat]) menuData[cat] = [];
+              menuData[cat].push({ name, price, id: docId });
 
-            isEditing = false;
-            editCategory = "";
-            editIndex = -1;
+              isEditing = false;
+              editCategory = "";
+              editIndex = -1;
 
-            renderMenu();
-          }).catch(error => {
-            alert("Error updating item: " + error.message);
-          });
+              renderMenu();
+            })
+            .catch((error) => {
+              alert("Error updating item: " + error.message);
+            });
         } else {
-          db.collection("Menu").add({
-            category: cat,
-            itemname: name,
-            price: price
-          }).then(docRef => {
-            menuData[cat].push({ name, price, id: docRef.id });
-            renderMenu();
-          }).catch(error => {
-            alert("Error adding item: " + error.message);
-          });
+          db.collection("Menu")
+            .add({
+              category: cat,
+              itemname: name,
+              price: price,
+            })
+            .then((docRef) => {
+              menuData[cat].push({ name, price, id: docRef.id });
+              renderMenu();
+            })
+            .catch((error) => {
+              alert("Error adding item: " + error.message);
+            });
         }
 
         document.getElementById("category").value = "";
@@ -317,13 +346,17 @@
       function deleteItem(category, index) {
         const docId = menuData[category][index].id;
 
-        db.collection("Menu").doc(docId).delete().then(() => {
-          menuData[category].splice(index, 1);
-          if (menuData[category].length === 0) delete menuData[category];
-          renderMenu();
-        }).catch(error => {
-          alert("Failed to delete: " + error.message);
-        });
+        db.collection("Menu")
+          .doc(docId)
+          .delete()
+          .then(() => {
+            menuData[category].splice(index, 1);
+            if (menuData[category].length === 0) delete menuData[category];
+            renderMenu();
+          })
+          .catch((error) => {
+            alert("Failed to delete: " + error.message);
+          });
       }
 
       window.onload = fetchMenuFromFirestore;
